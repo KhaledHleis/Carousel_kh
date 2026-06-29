@@ -70,7 +70,7 @@ def draw_disk(ax, c, r, col, alph=0.7, w=1):
 def draw_ddboat(ax, mx, my, ψ, w1, w2, drawpool=True, color="blue"):
     ech = 0.2
     if drawpool:
-        Pool = np.array([[12, 0], [12, 20], [0, 20], [0, 0], [12, 0]])
+        Pool = np.array([[25, -25], [25, 25], [-25, 25], [-25, -25], [25, -25]])
         draw_polygon(ax, Pool, "cyan")
     P = ech * np.array([[-1, 5, 7, 7, 5, -1, -1, -1], [-2, -2, -1, 1, 2, 2, -2, -2]])
     P1 = ech * np.array([[-w1 - 1, -1, -1], [2, 2, 1]])
