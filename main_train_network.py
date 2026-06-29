@@ -1,11 +1,11 @@
-from torch import from_numpy
+from torch import from_numpy, Tensor
 
 from datasets.get_dataset_v1 import get_dataset_v1
 from neural_net_pytorch_ import NeuralNetwork
 
 
 def cost_fn(prediction, true):
-    return (prediction - true) ** 2
+    return ((prediction - true) ** 2).sum()
 
 
 def train_network(inputs, outputs):
