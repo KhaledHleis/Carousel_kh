@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 
 def sawtooth(theta):
   return 2*np.arctan(np.tan(theta/2))
@@ -20,7 +19,6 @@ def draw_vector_field(xmin,xmax,ymin,ymax, R):
   X1, X2 = np.meshgrid(np.linspace(xmin,xmax,30), np.linspace(ymin,ymax,30))
   v1,v2 = phi(X1, X2,R)
   r = np.sqrt(v1**2 + v2**2)
-  plt.quiver(X1, X2, v1/r, v2/r)
 
 def motion_optimal(x, y, theta, K, u_bar, R):
   x_dot, y_dot = phi(x,y,R)
