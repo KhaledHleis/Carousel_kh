@@ -1,10 +1,10 @@
 import math
-from random import random, uniform
+from random import uniform
 
 import numpy as np
 
 
-def get_dataset_v1(N: int, K: float, u_bar: float, R: float):
+def get_dataset_v1(N: int, K: float, u_bar: float, R: float) -> tuple[np.ndarray, np.ndarray]:
     inputs = []
     outputs = []
     limit = 100
@@ -12,15 +12,13 @@ def get_dataset_v1(N: int, K: float, u_bar: float, R: float):
         x = uniform(-limit, limit)
         y = uniform(-limit, limit)
         theta = uniform(0, 2 * math.pi)
-        input = [x, y, math.cos(theta), math.sin(theta)]
-        output = [1, -1]
-        inputs.append(input)
-        outputs.append(output)
-    return np.array(inputs), np.array(outputs)
+        inputs.append([x, y, math.cos(theta), math.sin(theta)])
+        outputs.append([1, -1.])
+    return np.array(inputs,dtype=float), np.array(outputs, dtype=float)
 
 if __name__ == '__main__':
-    a, b = get_dataset_v1(10, 2, 2, 2)
-    print(a.shape, a)
-    print(b.shape, b)
+    inputs, outputs = get_dataset_v1(10, 2, 2, 2)
+    print(inputs.shape, inputs)
+    print(outputs.shape, outputs)
 
 
