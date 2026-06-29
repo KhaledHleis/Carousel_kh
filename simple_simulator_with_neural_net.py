@@ -1,7 +1,12 @@
-import matplotlib.pyplot as plt
 import numpy as np
+import math
+import matplotlib.pyplot as plt
+from torch import Tensor
 
-from ddboatlib import init_figure, clear, draw_ddboat
+import neural_net
+from datasets.get_dataset_v1 import get_input_line
+from ddboatlib import pool_to_latlong, init_figure, draw_polygon, clear, draw_ddboat, ψ0
+from neural_net import NeuralNetwork
 
 
 def sawtooth(theta):
@@ -39,7 +44,7 @@ def f(x, u):
 
 
    # Velocity x and y in the reference frame of the bassin
-   dx=vx*np.cos(θ)-vy*np.sin(θ)   
+   dx=vx*np.cos(θ)-vy*np.sin(θ)
    dy=vx*np.sin(θ)+vy*np.cos(θ)
    dθ=w
 
@@ -68,12 +73,17 @@ if __name__ == '__main__':
     x0, y0, θ0, vx0, vy0, w0, w10, w20 = 3, 3, 1, 10, 0, 0, 1, 1
     x = np.array([[x0, y0, θ0, vx0, vy0, w0, w10, w20]]).T
     dt = 0.01
-    R = 10
+
+    R = 1
     K, u_bar = 4, 20
-    for t in np.arange(0, 5, dt):
+    neural_net = NeuralNetwork("models/network_v1_100000_4_20_10_100000.csv")
+    for t in np.arange(0, 50, dt):
         clear(ax)
         draw_vector_field(-25,25,-25,25,R)
-        u1,u2 = motion_optimal(x[0,0], x[1,0], x[2,0], K, u_bar, R)
+        # u1,u2 = motion_optimal(x[0,0], x[1,0], x[2,0], K, u_bar, R)
+        inputs = Tensor(get_input_line(x[0,0], x[1,0], x[2,0]))
+        u1, u2 =neural_net.forward(inputs)
+        # u2, u1 =neural_net.forward(inputs)
         u = np.array([[u1], [u2]])
         x = x + dt * f(x, u)  # Euler
         mx, my, θ, vx, vy, w, w1, w2 = list(x[0:8, 0])
