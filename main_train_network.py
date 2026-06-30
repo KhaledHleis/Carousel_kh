@@ -1,4 +1,5 @@
 from torch import from_numpy
+import matplotlib.pyplot as plt
 
 from datasets.get_dataset_v1 import get_dataset_v1
 from datasets.get_dataset_v2 import get_dataset_v2
@@ -13,12 +14,21 @@ def cost_fn(prediction, true):
 def train_network(inputs, outputs, epochs: int, lr: float, network_name: str):
     model = NeuralNetwork()
     X, y = from_numpy(inputs), from_numpy(outputs)
-    model.train_model(X, y, cost_fn=cost_fn, epochs=epochs, lr=lr)
+    history = model.train_model(X, y, cost_fn=cost_fn, epochs=epochs, lr=lr,verbose=False)
     model.register_to_csv(f"models/{network_name}.csv")
+    
+    plt.figure(figsize=(8, 6))
+    plt.plot(history)
+    plt.xlabel("Epochs")
+    plt.ylabel("Loss")
+    plt.yscale("log")
+    plt.title("Training Loss")
+    plt.grid()
+    plt.show()
 
 def main_train_network():
     # Dataset settings
-    N = 100000
+    N = 1_000_000
     version = 3
     K = 4
     u_bar = 20
