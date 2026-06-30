@@ -8,6 +8,9 @@ from datasets.get_dataset_v1 import get_input_line
 from ddboatlib import pool_to_latlong, init_figure, draw_polygon, clear, draw_ddboat, ψ0
 from neural_net import NeuralNetwork
 
+# both NumPy (MKL) and PyTorch ship their own libiomp5md.dll, and Windows refuses to load it twice. It's not a bug in your code or the simulator.
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 def sawtooth(theta):
   return 2*np.arctan(np.tan(theta/2))
@@ -70,13 +73,13 @@ if __name__ == '__main__':
     p1, p2, p3, p4, p5, p6, p7 = 0.07, 2200, 3.e-05, 15.e-05, 0.4, 5.0, 5.0
 
     ax = init_figure(-25, 25, -25, 25)
-    x0, y0, θ0, vx0, vy0, w0, w10, w20 = 20, 20, 1, 10, 0, 0, 1, 1
+    x0, y0, θ0, vx0, vy0, w0, w10, w20 = 20, -20, 1, 10, 0, 0, 1, 1
     x = np.array([[x0, y0, θ0, vx0, vy0, w0, w10, w20]]).T
     dt = 0.01
 
     R = 10
     K, u_bar = 4, 20
-    neural_net = NeuralNetwork("models/network_v3_1000000_4_20_10_10000.csv")
+    neural_net = NeuralNetwork("models/network_rl_torch.csv")
     for t in np.arange(0, 50, dt):
         clear(ax)
         draw_vector_field(-25,25,-25,25,R)
