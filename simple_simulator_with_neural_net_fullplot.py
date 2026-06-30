@@ -72,7 +72,6 @@ if __name__ == '__main__':
 
     p1, p2, p3, p4, p5, p6, p7 = 0.07, 2200, 3.e-05, 15.e-05, 0.4, 5.0, 5.0
 
-    ax = init_figure(-25, 25, -25, 25)
     x0, y0, θ0, vx0, vy0, w0, w10, w20 = 20, -20, 1, 10, 0, 0, 1, 1
     x = np.array([[x0, y0, θ0, vx0, vy0, w0, w10, w20]]).T
     dt = 0.05
@@ -80,20 +79,31 @@ if __name__ == '__main__':
     R = 10
     K, u_bar = 4, 20
 
-    neural_net = NeuralNetwork("models/network_rl_FineTune400_1000.csv")
-    for t in np.arange(0, 50, dt):
-        clear(ax)
-        draw_vector_field(-25,25,-25,25,R)
-        # u1,u2 = motion_optimal(x[0,0], x[1,0], x[2,0], K, u_bar, R)
-        inputs = get_input_line(x[0,0], x[1,0], x[2,0])
-        u1, u2 =neural_net.forward(inputs)
-        # u2, u1 =neural_net.forward(inputs)
+    neural_net = NeuralNetwork("models/network_rl_torch.csv")
+
+    traj = [x.flatten().copy()]  # store full state history
+    for t in np.arange(0, 1000, dt):
+        inputs = get_input_line(x[0, 0], x[1, 0], x[2, 0])
+        u1, u2 = neural_net.forward(inputs)
         u = np.array([[u1], [u2]])
         x = x + dt * f(x, u)  # Euler
-        mx, my, θ, vx, vy, w, w1, w2 = list(x[0:8, 0])
-        draw_ddboat(ax, mx, my, θ, w1, w2)
-        plt.pause(0.0002)
-    plt.pause(10)
+        traj.append(x.flatten().copy())
+
+    traj = np.array(traj)  # shape (N, 8)
+
+    # Plot everything once at the end
+    ax = init_figure(-25, 25, -25, 25)
+    draw_vector_field(-25, 25, -25, 25, R)
+    plt.plot(traj[:, 0], traj[:, 1], 'r-', lw=2, label='trajectory')
+    plt.plot(traj[0, 0], traj[0, 1], 'go', label='start')
+    plt.plot(traj[-1, 0], traj[-1, 1], 'bo', label='end')
+
+    # Draw the boat at its final pose
+    mx, my, θ, vx, vy, w, w1, w2 = traj[-1]
+    draw_ddboat(ax, mx, my, θ, w1, w2)
+
+    plt.legend()
+    plt.show()
 
 
 

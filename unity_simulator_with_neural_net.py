@@ -2,6 +2,13 @@ import json
 import socket
 import numpy as np
 
+import neural_net
+from datasets.get_dataset_v1 import get_input_line
+from neural_net import NeuralNetwork
+# from torch import Tensor
+
+
+
 UNITY_IP = "10.125.4.72"
 COMMAND_PORT = 5005
 POSE_PORT = 5006
@@ -52,10 +59,16 @@ def receive_pose():
 
 
 if __name__ == "__main__":
+    neural_net = NeuralNetwork("models/network_rl_torch.csv")
     while True:  # Control loop
 
         x, y, cos_value, sin_value = receive_pose()
         theta = np.arctan2(sin_value, cos_value)
-        u1, u2 = motion_optimal(x, y, theta, K=0.3, u_bar=0.5, R=10)
-        print(u1,u2)
-        # send_command(u1,u2) 
+        inputs = get_input_line(x, y, theta)
+        u1, u2 =neural_net.forward(inputs)
+        # print(u1,u2)
+        # u1, u2 = motion_optimal(x, y, theta, K=0.1, u_bar=0.5, R=10)
+        send_command(u1,u2)
+        # send_command(-1,-1)
+
+         
