@@ -86,6 +86,7 @@ if __name__ == '__main__':
         # u1,u2 = motion_optimal(x[0,0], x[1,0], x[2,0], K, u_bar, R)
         inputs = Tensor(get_input_line(x[0,0], x[1,0], x[2,0]))
         u1, u2 =neural_net.forward(inputs)
+        u1, u2 = u_bar * float(u1),u_bar * float(u2)
         # u2, u1 =neural_net.forward(inputs)
         u = np.array([[u1], [u2]])
         x = x + dt * f(x, u)  # Euler
